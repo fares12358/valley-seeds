@@ -3,9 +3,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export const metadata = {
-  title: "METIX ECO - Natural Solutions for Sustainable Cities",
+  title: "Valley Seeds | Premium Vegetable Seeds — From Grain to Gain",
   description:
-    "METIX ECO delivers high-quality genetic material, advanced ecological solutions, and blockchain transparency for modern cities.",
+    "Valley Seeds is Egypt's leading importer of elite vegetable seeds. Connecting global agricultural innovation with Egyptian farmers since 2018. 560+ active clients. Backed by field science, Odoo ERP, and dedicated agronomist support.",
 };
 
 export default function RootLayout({ children }) {
