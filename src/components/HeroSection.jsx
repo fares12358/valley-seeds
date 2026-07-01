@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { FaArrowRight, FaPhone } from "react-icons/fa";
 
 const stats = [
@@ -12,6 +13,22 @@ const stats = [
 
 export default function HeroSection() {
   const router = useRouter();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const scrollToSection = (sectionId) => {
+    setIsMobileMenuOpen(false);
+    if (!sectionId) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const headerOffset = 80;
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      const offsetPosition = elementPosition - headerOffset;
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+    }
+  };
 
   return (
     <section
@@ -58,7 +75,7 @@ export default function HeroSection() {
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
             <button
-              onClick={() => router.push("/contact")}
+              onClick={() => scrollToSection("contact")}
               className="group bg-white text-[#2F6E49] px-8 py-4 rounded-lg hover:bg-[#8CCB8A] hover:text-white transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl"
             >
               Request a Quote
@@ -66,7 +83,8 @@ export default function HeroSection() {
             </button>
 
             <button
-              onClick={() => router.push("/contact")}
+              onClick={() => scrollToSection("contact")}
+
               className="group bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white hover:text-[#2F6E49] transition-all duration-300 flex items-center gap-2"
             >
               <FaPhone className="w-5 h-5" />

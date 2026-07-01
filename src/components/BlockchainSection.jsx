@@ -1,6 +1,8 @@
+"use client";
+
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FiUsers, FiPackage, FiGlobe, FiShield, FiMapPin } from 'react-icons/fi';
+import { FiUsers, FiPackage, FiGlobe, FiShield, FiMapPin, FiCheckCircle } from 'react-icons/fi';
 
 const erpPoints = [
   {
@@ -25,83 +27,155 @@ const dashboardItems = [
   { icon: FiMapPin, label: 'Coverage', val: 'All Egypt' },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+};
+
 const ERP = () => {
   return (
-    <section className="py-22 px-12 bg-linear-to-br from-[#243d14] to-[#1a2e0e]">
-      <div className="max-w-280 mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        <motion.div
-          initial={{ opacity: 0, x: -40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-        >
-          <div className="inline-flex items-center gap-2.5 text-[10px] tracking-[0.16em] uppercase text-[#8cc63f] mb-3.5">
-            <span className="block w-6 h-px bg-[#c9a84c]" />
-            Digital Infrastructure
-          </div>
+    <section className="relative py-24 lg:py-32 bg-gradient-to-br from-[#1a3d2a] via-[#2F6E49] to-[#3D8B5E] overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#8CCB8A]/5 rounded-full blur-3xl translate-x-1/3 -translate-y-1/3" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-white/5 rounded-full blur-3xl -translate-x-1/3 translate-y-1/3" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#8CCB8A]/30 to-transparent" />
 
-          <h2 className="font-serif text-4xl font-normal leading-snug mb-5 text-white">
-            Precision Through<br />Technology
-          </h2>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
-          <p className="text-sm text-[#96a882] leading-relaxed mb-7">
-            We don't just sell seeds — we run a precision agricultural business. Our entire operation is powered by Odoo ERP, giving every partner full visibility into the supply chain.
-          </p>
+          {/* Left Content */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+          >
+            {/* Eyebrow */}
+            <div className="inline-flex items-center gap-2.5 text-xs tracking-[0.2em] uppercase text-[#8CCB8A] mb-6">
+              <span className="block w-8 h-px bg-[#8CCB8A]" />
+              Digital Infrastructure
+            </div>
 
-          <div className="flex flex-col gap-4.5">
-            {erpPoints.map((pt, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="flex gap-3.5 items-start"
-              >
-                <div className="mt-1.5 flex-shrink-0">
-                  <div className="w-2 h-2 rounded-full bg-[#8cc63f]" />
-                </div>
-                <div>
-                  <div className="text-[13px] font-semibold text-white mb-0.5">{pt.title}</div>
-                  <div className="text-xs text-[#96a882] leading-relaxed">{pt.text}</div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-normal leading-tight mb-6 text-white">
+              Precision Through<br />
+              <span className="text-[#8CCB8A]">Technology</span>
+            </h2>
 
-        <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="bg-[rgba(13,26,7,0.7)] rounded-2xl border border-[rgba(140,198,63,0.2)] p-6 backdrop-blur-sm"
-        >
-          <div className="flex items-center gap-2 text-[9px] tracking-[0.14em] uppercase text-[#96a882] mb-4 pb-3 border-b border-[rgba(140,198,63,0.15)]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#8cc63f] inline-block" />
-            Live Dashboard — Odoo ERP
-          </div>
+            <p className="text-white/70 text-base sm:text-lg leading-relaxed mb-10 max-w-lg">
+              We don&apos;t just sell seeds — we run a precision agricultural business. Our entire operation is powered by Odoo ERP, giving every partner full visibility into the supply chain.
+            </p>
 
-          {dashboardItems.map((item, index) => {
-            const Icon = item.icon;
-            return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08, duration: 0.4 }}
-                className="flex items-center justify-between py-3 border-b border-[rgba(140,198,63,0.08)] last:border-b-0"
-              >
-                <span className="flex items-center gap-2 text-xs text-[#96a882]">
-                  <Icon className="text-sm text-[#6aa635]" />
-                  {item.label}
+            {/* ERP Points */}
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="space-y-5"
+            >
+              {erpPoints.map((pt, index) => (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  whileHover={{ x: 4 }}
+                  className="flex gap-4 items-start group cursor-default"
+                >
+                  <div className="mt-1 flex-shrink-0">
+                    <div className="w-6 h-6 rounded-lg bg-[#8CCB8A]/15 flex items-center justify-center group-hover:bg-[#8CCB8A]/25 transition-colors duration-300">
+                      <FiCheckCircle className="w-3.5 h-3.5 text-[#8CCB8A]" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-white mb-1 group-hover:text-[#8CCB8A] transition-colors duration-300">
+                      {pt.title}
+                    </div>
+                    <div className="text-sm text-white/60 leading-relaxed">
+                      {pt.text}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* Right Dashboard Card */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+          >
+            <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/15 shadow-[0_8px_40px_rgba(0,0,0,0.2)] overflow-hidden">
+              {/* Card Header */}
+              <div className="px-6 py-5 border-b border-white/10 flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-[#8CCB8A] animate-pulse" />
+                <span className="text-xs tracking-[0.15em] uppercase text-[#8CCB8A] font-medium">
+                  Live Dashboard — Odoo ERP
                 </span>
-                <span className="text-sm font-semibold text-[#8cc63f] font-serif">{item.val}</span>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+              </div>
+
+              {/* Dashboard Items */}
+              <div className="p-2">
+                {dashboardItems.map((item, index) => {
+                  const Icon = item.icon;
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.3 + index * 0.08, duration: 0.4 }}
+                      whileHover={{ backgroundColor: 'rgba(140, 203, 138, 0.08)' }}
+                      className="flex items-center justify-between px-4 py-4 rounded-xl transition-all duration-200 group"
+                    >
+                      <span className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-[#8CCB8A]/10 flex items-center justify-center group-hover:bg-[#8CCB8A]/20 transition-colors duration-200">
+                          <Icon className="w-5 h-5 text-[#8CCB8A]" />
+                        </div>
+                        <span className="text-sm text-white/70 group-hover:text-white transition-colors duration-200">
+                          {item.label}
+                        </span>
+                      </span>
+                      <span className="text-base font-bold text-white font-serif tracking-tight">
+                        {item.val}
+                      </span>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {/* Card Footer */}
+              <div className="px-6 py-4 border-t border-white/10 bg-white/5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-white/40 tracking-wider uppercase">Last updated</span>
+                  <span className="text-[10px] text-[#8CCB8A] tracking-wider">Just now</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Floating stat badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+              className="mt-6 flex items-center justify-center gap-2"
+            >
+              <div className="w-2 h-2 rounded-full bg-[#8CCB8A] animate-pulse" />
+              <span className="text-xs text-white/50 tracking-wide">
+                Real-time data synchronization active
+              </span>
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
