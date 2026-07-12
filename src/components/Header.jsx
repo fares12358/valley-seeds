@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -55,32 +56,23 @@ export default function Header() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          {/* Logo with SVG */}
+          <Link href="/" className="flex items-center space-x-3">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-3"
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-[#2F6E49] to-[#8CCB8A] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">VS</span>
+              <div className="relative w-40 h-10 flex items-center justify-center ">
+                <Image
+                  src={`${!isHome || isScrolled ? '/images/logo.svg':'/images/logo-white.svg'}`}
+                  alt="Valley Seeds Logo"
+                  fill
+                  className="object-contain"
+                  priority
+                />
               </div>
-              <div>
-                <div
-                  className={`font-semibold transition-colors ${
-                    isScrolled ? "text-[#2F6E49]" : "text-white"
-                  }`}
-                >
-                  Valley Seeds
-                </div>
-                <div
-                  className={`text-xs ${
-                    isScrolled ? "text-gray-600" : "text-gray-200"
-                  }`}
-                >
-                  From Grain to Gain
-                </div>
-              </div>
+             
             </motion.div>
           </Link>
 
@@ -95,7 +87,7 @@ export default function Header() {
               >
                 <button
                   onClick={() => scrollToSection(item.sectionId)}
-                  className={`transition-colors hover:text-[#2F6E49] font-medium cursor-pointer bg-transparent border-none ${
+                  className={`relative transition-colors hover:text-[#2F6E49] font-medium cursor-pointer bg-transparent border-none text-sm ${
                     pathname === item.path && !item.sectionId
                       ? "text-[#2F6E49]"
                       : isScrolled || !isHome
@@ -104,10 +96,32 @@ export default function Header() {
                   }`}
                 >
                   {item.label}
+                  {/* Active indicator */}
+                  {(pathname === item.path && !item.sectionId) && (
+                    <motion.div
+                      layoutId="activeNav"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#2F6E49] rounded-full"
+                    />
+                  )}
                 </button>
               </motion.div>
             ))}
           </nav>
+
+          {/* CTA Button — Desktop */}
+          <motion.button
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+            onClick={() => scrollToSection("contact")}
+            className={`hidden lg:flex items-center px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
+              isScrolled || !isHome
+                ? "bg-gradient-to-r from-[#2F6E49] to-[#3D8B5E] text-white hover:shadow-lg hover:shadow-[#2F6E49]/20"
+                : "bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white/20"
+            }`}
+          >
+            Get in Touch
+          </motion.button>
 
           {/* Mobile Menu Button */}
           <button
@@ -130,22 +144,35 @@ export default function Header() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white border-t border-gray-200 overflow-hidden"
+            transition={{ duration: 0.3 }}
+            className="lg:hidden bg-white/95 backdrop-blur-md border-t border-gray-200 overflow-hidden shadow-lg"
           >
-            <nav className="max-w-7xl mx-auto px-4 py-4 flex flex-col space-y-4">
-              {navItems.map((item) => (
-                <button
+            <nav className="max-w-7xl mx-auto px-4 py-4 flex flex-col space-y-1">
+              {navItems.map((item, index) => (
+                <motion.button
                   key={item.label}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
                   onClick={() => scrollToSection(item.sectionId)}
-                  className={`text-left transition-colors py-2 font-medium cursor-pointer bg-transparent border-none ${
+                  className={`text-left transition-colors py-3 px-3 rounded-lg font-medium cursor-pointer bg-transparent border-none ${
                     pathname === item.path && !item.sectionId
-                      ? "text-[#2F6E49]"
-                      : "text-gray-700 hover:text-[#2F6E49]"
+                      ? "text-[#2F6E49] bg-[#2F6E49]/5"
+                      : "text-gray-700 hover:text-[#2F6E49] hover:bg-gray-50"
                   }`}
                 >
                   {item.label}
-                </button>
+                </motion.button>
               ))}
+              <motion.button
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.25 }}
+                onClick={() => scrollToSection("contact")}
+                className="mt-3 w-full py-3 rounded-lg bg-gradient-to-r from-[#2F6E49] to-[#3D8B5E] text-white font-semibold text-sm"
+              >
+                Get in Touch
+              </motion.button>
             </nav>
           </motion.div>
         )}

@@ -20,7 +20,7 @@ const techCards = [
 const Technology = () => {
   return (
     <section id="technology" className="py-22 px-12 bg-[#ede8db]">
-      <div className="max-w-[1120px] mx-auto">
+      <div className="max-w-280 mx-auto">
         <div className="inline-flex items-center gap-2.5 text-[10px] tracking-[0.16em] uppercase text-[#4d862b] mb-3.5">
           <span className="block w-6 h-px bg-[#c9a84c]" />
           Technical Excellence

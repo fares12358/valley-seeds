@@ -117,7 +117,7 @@ export default function HeroSection() {
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 1.4 + index * 0.15, type: "spring", stiffness: 200 }}
-                    className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-serif tracking-tight"
+                    className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight"
                   >
                     {stat.number}
                   </motion.span>

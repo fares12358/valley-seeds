@@ -7,15 +7,15 @@ const timelineItems = [
     heading: 'Apex Seeds Founded',
     body: "Launched to elevate Egypt's agricultural sector through elite vegetable seed distribution and on- ground technical support.",
   },
-{
-  year: '2021',
+  {
+    year: '2021',
     heading: 'Valley Seeds Established',
-      body: "Created as the group's importing arm — directly connecting the global seed market with Egyptian farmers.",
-},
-{
-  year: '2025',
+    body: "Created as the group's importing arm — directly connecting the global seed market with Egyptian farmers.",
+  },
+  {
+    year: '2025',
     heading: '560+ Clients, $700K+ Volume',
-      body: 'Sustained annual growth driven by superior genetics, Odoo-powered transparency, and a partnership-first mindset.',
+    body: 'Sustained annual growth driven by superior genetics, Odoo-powered transparency, and a partnership-first mindset.',
   },
 ];
 
@@ -40,37 +40,11 @@ const AboutSection = () => {
             </h2>
 
             <p className="text-[15px] text-[#3d5228] leading-relaxed mb-4">
-              Apex Seeds was founded in 2018 with a bold ambition: to elevate Egypt's agricultural sector through the distribution of elite vegetable seeds, combining deep field expertise with innovative solutions that genuinely serve the Egyptian farmer.
-            </p>
+              In 2021, Valley Seeds was established with a strategic vision for direct access to the finest international seed genetics, serving as the direct bridge between global innovation and Egyptian agriculture.            </p>
 
-            <p className="text-[15px] text-[#3d5228] leading-relaxed mb-9">
-              By 2021, our track record in the domestic market led to the founding of Valley Seeds — the group's dedicated importing arm — giving us direct access to the world's most advanced seed genetics and creating a seamless bridge between global innovation and local agriculture.
-            </p>
 
-            <div className="relative pl-7">
-              <div className="absolute left-2 top-2 bottom-2 w-px bg-gradient-to-b from-[#8cc63f] to-[#d8edae]" />
-              {timelineItems.map((item, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.15, duration: 0.5 }}
-                  className="relative mb-8 last:mb-0"
-                >
-                  <div className="absolute -left-[22px] top-1.5 w-[11px] h-[11px] rounded-full bg-[#8cc63f] border-2 border-[#f5f2eb] shadow-[0_0_0_3px_rgba(140,198,63,0.2)]" />
-                  <div className="text-[10px] font-semibold text-[#c9a84c] tracking-[0.1em] mb-1 uppercase">
-                    {item.year}
-                  </div>
-                  <div className="text-sm font-semibold mb-1.5 text-[#1a2e0e]">
-                    {item.heading}
-                  </div>
-                  <div className="text-[13px] text-[#6a8050] leading-relaxed">
-                    {item.body}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+
+
           </motion.div>
 
           <motion.div

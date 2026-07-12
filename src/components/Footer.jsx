@@ -14,6 +14,7 @@ import {
   FaInstagram,
   FaWhatsapp,
 } from "react-icons/fa";
+import Image from "next/image";
 
 const quickLinks = [
   { label: "Home", href: "/" },
@@ -74,16 +75,17 @@ export default function Footer() {
             className="sm:col-span-2 lg:col-span-1"
           >
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-11 h-11 bg-gradient-to-br from-[#8CCB8A] to-[#2F6E49] rounded-xl flex items-center justify-center shadow-md">
-                <FaSeedling className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <div className="text-lg font-bold tracking-tight">Valley Seeds</div>
-                <div className="text-[10px] text-[#8CCB8A] tracking-[0.15em] uppercase">From Grain to Gain</div>
+              <div className="relative w-40 h-10 flex items-center justify-center">
+                <Image
+                  src="/images/logo-white.svg"
+                  alt="Valley Seeds Logo"
+                  fill
+                  className="object-contain"
+                />
               </div>
             </div>
             <p className="text-white/60 text-sm leading-relaxed mb-6 max-w-xs">
-              Egypt&apos;s premier importer of elite vegetable seeds. Bridging global agricultural innovation with Egyptian farmers since 2018.
+              Egypt&apos;s premier importer of elite vegetable seeds. Bridging global agricultural innovation with Egyptian farmers since 2021.
             </p>
 
             {/* Social links */}

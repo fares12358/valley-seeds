@@ -15,7 +15,7 @@ const reasons = [
   {
     num: '03',
     title: 'Integrated Supply Chain',
-    desc: 'Global sourcing via Valley Seeds + powerful domestic distribution via Apex Seeds — one seamless operation.',
+    desc: 'Direct global sourcing combined with a robust and extensive nationwide logistics network, ensuring a seamless and reliable seed supply throughout Egypt.',
   },
   {
     num: '04',
@@ -53,7 +53,7 @@ const WhyUsSection = () => {
               whileHover={{ borderColor: '#8cc63f', boxShadow: '0 4px 20px rgba(140,198,63,0.1)' }}
               className="grid grid-cols-1 md:grid-cols-[60px_1fr_280px] items-center gap-6 bg-white rounded-[14px] border border-[rgba(140,198,63,0.15)] px-6 py-4.5 transition-all duration-200"
             >
-              <div className="font-serif text-[28px] text-[#d8edae]">{reason.num}</div>
+              <div className=" text-[28px] text-[#d8edae]">{reason.num}</div>
               <div className="text-[15px] font-semibold text-[#1a2e0e]">{reason.title}</div>
               <div className="text-[13px] text-[#6a8050] leading-relaxed">{reason.desc}</div>
             </motion.div>
