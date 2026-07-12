@@ -1,6 +1,5 @@
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { LangProvider } from "@/context/LangContext";
 
 export const metadata = {
   title: "Valley Seeds | Premium Vegetable Seeds — From Grain to Gain",
@@ -10,13 +9,18 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    /*
+     * lang and dir are set dynamically by LangContext via
+     * document.documentElement.setAttribute on the client.
+     * We set sensible defaults here for SSR / initial render.
+     */
+    <html lang="en" dir="ltr">
       <body>
-        <div className="min-h-screen bg-white flex flex-col overflow-x-hidden">
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
+        <LangProvider>
+          <div className="min-h-screen bg-white flex flex-col overflow-x-hidden">
+            {children}
+          </div>
+        </LangProvider>
       </body>
     </html>
   );

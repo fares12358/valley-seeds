@@ -6,20 +6,23 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaBars, FaTimes } from "react-icons/fa";
-
-const navItems = [
-  { label: "Home", path: "/", sectionId: null },
-  { label: "About", path: "/", sectionId: "about" },
-  { label: "Services", path: "/", sectionId: "services" },
-  { label: "Technology", path: "/", sectionId: "technology" },
-  { label: "Contact", path: "/", sectionId: "contact" },
-];
+import { useTranslation } from "@/context/LangContext";
+import { LOCALE_META, SUPPORTED_LOCALES } from "@/i18n/index";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const { t, lang, setLang, isRTL } = useTranslation();
+
+  const navItems = [
+    { label: t.nav.home,       path: "/", sectionId: null },
+    { label: t.nav.about,      path: "/", sectionId: "about" },
+    { label: t.nav.services,   path: "/", sectionId: "services" },
+    { label: t.nav.technology, path: "/", sectionId: "technology" },
+    { label: t.nav.contact,    path: "/", sectionId: "contact" },
+  ];
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -46,33 +49,38 @@ export default function Header() {
     }
   };
 
+  const toggleLang = () => {
+    const next = lang === "en" ? "ar" : "en";
+    setLang(next);
+  };
+
+  const isLight = !isHome || isScrolled;
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        !isHome || isScrolled
-          ? "bg-white/95 backdrop-blur-md shadow-md"
-          : "bg-transparent"
+        isLight ? "bg-white/95 backdrop-blur-md shadow-md" : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
-          {/* Logo with SVG */}
+
+          {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center space-x-3"
             >
-              <div className="relative w-40 h-10 flex items-center justify-center ">
+              <div className="relative w-40 h-10 flex items-center justify-center">
                 <Image
-                  src={`${!isHome || isScrolled ? '/images/logo.svg':'/images/logo-white.svg'}`}
+                  src={isLight ? "/images/logo.svg" : "/images/logo-white.svg"}
                   alt="Valley Seeds Logo"
                   fill
                   className="object-contain"
                   priority
                 />
               </div>
-             
             </motion.div>
           </Link>
 
@@ -87,20 +95,19 @@ export default function Header() {
               >
                 <button
                   onClick={() => scrollToSection(item.sectionId)}
-                  className={`relative transition-colors hover:text-[#2F6E49] font-medium cursor-pointer bg-transparent border-none text-sm ${
+                  className={`relative transition-colors hover:text-[#037338] font-medium cursor-pointer bg-transparent border-none text-sm ${
                     pathname === item.path && !item.sectionId
-                      ? "text-[#2F6E49]"
-                      : isScrolled || !isHome
+                      ? "text-[#037338]"
+                      : isLight
                         ? "text-gray-700"
                         : "text-white"
                   }`}
                 >
                   {item.label}
-                  {/* Active indicator */}
-                  {(pathname === item.path && !item.sectionId) && (
+                  {pathname === item.path && !item.sectionId && (
                     <motion.div
                       layoutId="activeNav"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#2F6E49] rounded-full"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#037338] rounded-full"
                     />
                   )}
                 </button>
@@ -108,32 +115,67 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* CTA Button — Desktop */}
-          <motion.button
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-            onClick={() => scrollToSection("contact")}
-            className={`hidden lg:flex items-center px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
-              isScrolled || !isHome
-                ? "bg-gradient-to-r from-[#2F6E49] to-[#3D8B5E] text-white hover:shadow-lg hover:shadow-[#2F6E49]/20"
-                : "bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white/20"
-            }`}
-          >
-            Get in Touch
-          </motion.button>
+          {/* Right side: CTA + Lang switcher */}
+          <div className="hidden lg:flex items-center gap-3">
+            {/* Language switcher */}
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              onClick={toggleLang}
+              aria-label="Switch language"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold tracking-wider border transition-all duration-300 ${
+                isLight
+                  ? "border-[#037338]/30 text-[#037338] hover:bg-[#037338]/5"
+                  : "border-white/30 text-white hover:bg-white/10"
+              }`}
+            >
+              <span>{LOCALE_META[lang === "en" ? "ar" : "en"].flag}</span>
+              <span>{LOCALE_META[lang === "en" ? "ar" : "en"].label}</span>
+            </motion.button>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`lg:hidden p-2 rounded-lg transition-colors ${
-              isScrolled || !isHome
-                ? "text-gray-700 hover:bg-gray-100"
-                : "text-white hover:bg-white/10"
-            }`}
-          >
-            {isMobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
-          </button>
+            {/* CTA */}
+            <motion.button
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              onClick={() => scrollToSection("contact")}
+              className={`flex items-center px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
+                isLight
+                  ? "bg-gradient-to-r from-[#037338] to-[#05964a] text-white hover:shadow-lg hover:shadow-[#037338]/20"
+                  : "bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white/20"
+              }`}
+            >
+              {t.nav.cta}
+            </motion.button>
+          </div>
+
+          {/* Mobile: lang + hamburger */}
+          <div className="lg:hidden flex items-center gap-2">
+            <button
+              onClick={toggleLang}
+              aria-label="Switch language"
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+                isLight
+                  ? "border-[#037338]/30 text-[#037338]"
+                  : "border-white/30 text-white"
+              }`}
+            >
+              <span>{LOCALE_META[lang === "en" ? "ar" : "en"].flag}</span>
+              <span>{LOCALE_META[lang === "en" ? "ar" : "en"].label}</span>
+            </button>
+
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className={`p-2 rounded-lg transition-colors ${
+                isLight
+                  ? "text-gray-700 hover:bg-gray-100"
+                  : "text-white hover:bg-white/10"
+              }`}
+            >
+              {isMobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -147,31 +189,33 @@ export default function Header() {
             transition={{ duration: 0.3 }}
             className="lg:hidden bg-white/95 backdrop-blur-md border-t border-gray-200 overflow-hidden shadow-lg"
           >
-            <nav className="max-w-7xl mx-auto px-4 py-4 flex flex-col space-y-1">
+            <nav
+              className={`max-w-7xl mx-auto px-4 py-4 flex flex-col space-y-1 ${isRTL ? "text-right" : "text-left"}`}
+            >
               {navItems.map((item, index) => (
                 <motion.button
                   key={item.label}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
                   onClick={() => scrollToSection(item.sectionId)}
                   className={`text-left transition-colors py-3 px-3 rounded-lg font-medium cursor-pointer bg-transparent border-none ${
                     pathname === item.path && !item.sectionId
-                      ? "text-[#2F6E49] bg-[#2F6E49]/5"
-                      : "text-gray-700 hover:text-[#2F6E49] hover:bg-gray-50"
-                  }`}
+                      ? "text-[#037338] bg-[#037338]/5"
+                      : "text-gray-700 hover:text-[#037338] hover:bg-gray-50"
+                  } ${isRTL ? "text-right" : "text-left"}`}
                 >
                   {item.label}
                 </motion.button>
               ))}
               <motion.button
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.25 }}
                 onClick={() => scrollToSection("contact")}
-                className="mt-3 w-full py-3 rounded-lg bg-gradient-to-r from-[#2F6E49] to-[#3D8B5E] text-white font-semibold text-sm"
+                className="mt-3 w-full py-3 rounded-lg bg-gradient-to-r from-[#037338] to-[#05964a] text-white font-semibold text-sm"
               >
-                Get in Touch
+                {t.nav.cta}
               </motion.button>
             </nav>
           </motion.div>

@@ -3,60 +3,30 @@
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import {
-  FaEnvelope,
-  FaPhone,
-  FaMapMarkerAlt,
-  FaPaperPlane,
-  FaLink,
-  FaCheckCircle,
-  FaWhatsapp,
-  FaClock,
-  FaArrowRight,
+  FaEnvelope, FaPhone, FaMapMarkerAlt,
+  FaPaperPlane, FaLink, FaCheckCircle,
+  FaWhatsapp, FaArrowRight,
 } from "react-icons/fa";
+import { useTranslation } from "@/context/LangContext";
 
-const contactInfo = [
-  {
-    icon: FaEnvelope,
-    label: "Email",
-    value: "info@valley-seeds.com",
-    link: "mailto:info@valley-seeds.com",
-    color: "from-[#2F6E49] to-[#4A9E6A]",
-    bgHover: "hover:bg-[#2F6E49]/5",
-  },
-  {
-    icon: FaPhone,
-    label: "Phone",
-    value: "+02 012 876 369 86",
-    link: "tel:+0201287636986",
-    color: "from-[#3D8B5E] to-[#6BBF8A]",
-    bgHover: "hover:bg-[#3D8B5E]/5",
-  },
-  {
-    icon: FaWhatsapp,
-    label: "WhatsApp",
-    value: "+20 128 763 6986",
-    link: "https://wa.me/201287636986",
-    color: "from-[#25D366] to-[#128C7E]",
-    bgHover: "hover:bg-[#25D366]/5",
-  },
-  {
-    icon: FaLink,
-    label: "Website",
-    value: "www.valley-seeds.com",
-    link: "https://www.valley-seeds.com",
-    color: "from-[#6BBF8A] to-[#8CCB8A]",
-    bgHover: "hover:bg-[#6BBF8A]/5",
-  },
-];
+const INFO_ICONS = { email: FaEnvelope, phone: FaPhone, whatsapp: FaWhatsapp, website: FaLink };
+const INFO_COLORS = {
+  email:    "from-[#037338] to-[#05964a]",
+  phone:    "from-[#037338] to-[#96C422]",
+  whatsapp: "from-[#25D366] to-[#128C7E]",
+  website:  "from-[#96C422] to-[#b8e032]",
+};
+const INFO_HOVER = {
+  email:    "hover:bg-[#037338]/5",
+  phone:    "hover:bg-[#037338]/5",
+  whatsapp: "hover:bg-[#25D366]/5",
+  website:  "hover:bg-[#96C422]/5",
+};
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.3 },
-  },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.3 } },
 };
-
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
@@ -65,6 +35,10 @@ const itemVariants = {
 export default function ContactSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const { t, isRTL } = useTranslation();
+  const c = t.contact;
+  const f = c.form;
+
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -73,7 +47,7 @@ export default function ContactSection() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
-      setError("Please fill in all required fields.");
+      setError(f.error);
       return;
     }
     setError("");
@@ -81,21 +55,19 @@ export default function ContactSection() {
     setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
   };
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const inputClasses = (fieldName) =>
     `w-full px-5 py-4 bg-gray-50 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
       focusedField === fieldName
-        ? "border-[#2F6E49] bg-white shadow-[0_0_0_4px_rgba(47,110,73,0.08)]"
+        ? "border-[#037338] bg-white shadow-[0_0_0_4px_rgba(3,115,56,0.08)]"
         : "border-gray-200 hover:border-gray-300"
     }`;
 
   return (
     <section id="contact" className="relative py-24 lg:py-32 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden">
-      {/* Decorative background */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#8CCB8A]/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#2F6E49]/5 rounded-full blur-3xl" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#96C422]/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#037338]/5 rounded-full blur-3xl" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -106,32 +78,31 @@ export default function ContactSection() {
           transition={{ duration: 0.7 }}
           className="text-center mb-16 lg:mb-20"
         >
-          <span className="inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-[#2F6E49]/70 font-medium mb-6">
-            <span className="w-8 h-px bg-[#8CCB8A]" />
-            Get In Touch
-            <span className="w-8 h-px bg-[#8CCB8A]" />
+          <span className="inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-[#037338]/70 font-medium mb-6">
+            <span className="w-8 h-px bg-[#96C422]" />
+            {c.eyebrow}
+            <span className="w-8 h-px bg-[#96C422]" />
           </span>
 
-          <h2 className="text-[#2F6E49] mb-6 font-serif text-3xl sm:text-4xl lg:text-5xl leading-tight">
-            Ready to Grow<br className="hidden sm:block" /> With Us?
+          <h2 className="text-[#037338] mb-6 font-serif text-3xl sm:text-4xl lg:text-5xl leading-tight">
+            {c.heading_line1}<br className="hidden sm:block" /> {c.heading_line2}
           </h2>
 
           <p className="text-gray-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            Whether you&apos;re a farmer, distributor, or global seed company — let&apos;s build something extraordinary together.
+            {c.subheading}
           </p>
         </motion.div>
 
         <div className="grid lg:grid-cols-5 gap-10 lg:gap-12">
-          {/* Form — takes 3 columns */}
+          {/* Form */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8 }}
             className="lg:col-span-3"
           >
-            <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-[0_4px_40px_rgba(47,110,73,0.06)] border border-gray-100 relative overflow-hidden">
-              {/* Top accent */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#2F6E49] via-[#8CCB8A] to-[#2F6E49]" />
+            <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-[0_4px_40px_rgba(3,115,56,0.06)] border border-gray-100 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#037338] via-[#96C422] to-[#037338]" />
 
               {submitted ? (
                 <motion.div
@@ -144,30 +115,29 @@ export default function ContactSection() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-                    className="w-20 h-20 bg-gradient-to-br from-[#2F6E49] to-[#8CCB8A] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg"
+                    className="w-20 h-20 bg-gradient-to-br from-[#037338] to-[#96C422] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg"
                   >
                     <FaCheckCircle className="w-10 h-10 text-white" />
                   </motion.div>
-                  <h3 className="text-[#2F6E49] mb-3 text-2xl font-serif">Message Sent!</h3>
-                  <p className="text-gray-500 max-w-md mx-auto mb-8">
-                    Thank you for reaching out. Our team will review your message and get back to you within 24 hours.
-                  </p>
+                  <h3 className="text-[#037338] mb-3 text-2xl font-serif">{c.success.heading}</h3>
+                  <p className="text-gray-500 max-w-md mx-auto mb-8">{c.success.body}</p>
                   <button
                     onClick={() => setSubmitted(false)}
-                    className="inline-flex items-center gap-2 text-sm text-[#2F6E49] font-medium hover:gap-3 transition-all"
+                    className="inline-flex items-center gap-2 text-sm text-[#037338] font-medium hover:gap-3 transition-all"
                   >
-                    Send another message <FaArrowRight className="w-4 h-4" />
+                    {c.success.again}
+                    <FaArrowRight className={`w-4 h-4 ${isRTL ? "rotate-180" : ""}`} />
                   </button>
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2F6E49] to-[#8CCB8A] flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#037338] to-[#96C422] flex items-center justify-center">
                       <FaPaperPlane className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-[#2F6E49]">Send a Message</h3>
-                      <p className="text-xs text-gray-400">We typically respond within 24 hours</p>
+                      <h3 className="text-lg font-semibold text-[#037338]">{f.title}</h3>
+                      <p className="text-xs text-gray-400">{f.subtitle}</p>
                     </div>
                   </div>
 
@@ -185,34 +155,24 @@ export default function ContactSection() {
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-gray-600 mb-2">
-                        Full Name <span className="text-red-400">*</span>
+                        {f.name_label} <span className="text-red-400">*</span>
                       </label>
                       <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        onFocus={() => setFocusedField("name")}
-                        onBlur={() => setFocusedField(null)}
-                        className={inputClasses("name")}
-                        placeholder="John Doe"
+                        type="text" id="name" name="name"
+                        value={formData.name} onChange={handleChange}
+                        onFocus={() => setFocusedField("name")} onBlur={() => setFocusedField(null)}
+                        className={inputClasses("name")} placeholder={f.name_placeholder}
                       />
                     </div>
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium text-gray-600 mb-2">
-                        Email Address <span className="text-red-400">*</span>
+                        {f.email_label} <span className="text-red-400">*</span>
                       </label>
                       <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        onFocus={() => setFocusedField("email")}
-                        onBlur={() => setFocusedField(null)}
-                        className={inputClasses("email")}
-                        placeholder="john@example.com"
+                        type="email" id="email" name="email"
+                        value={formData.email} onChange={handleChange}
+                        onFocus={() => setFocusedField("email")} onBlur={() => setFocusedField(null)}
+                        className={inputClasses("email")} placeholder={f.email_placeholder}
                       />
                     </div>
                   </div>
@@ -220,56 +180,43 @@ export default function ContactSection() {
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
                       <label htmlFor="phone" className="block text-sm font-medium text-gray-600 mb-2">
-                        Phone Number
+                        {f.phone_label}
                       </label>
                       <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        onFocus={() => setFocusedField("phone")}
-                        onBlur={() => setFocusedField(null)}
-                        className={inputClasses("phone")}
-                        placeholder="+20 1XX XXX XXXX"
+                        type="tel" id="phone" name="phone"
+                        value={formData.phone} onChange={handleChange}
+                        onFocus={() => setFocusedField("phone")} onBlur={() => setFocusedField(null)}
+                        className={inputClasses("phone")} placeholder={f.phone_placeholder}
                       />
                     </div>
                     <div>
                       <label htmlFor="subject" className="block text-sm font-medium text-gray-600 mb-2">
-                        Subject
+                        {f.subject_label}
                       </label>
                       <select
-                        id="subject"
-                        name="subject"
-                        value={formData.subject}
-                        onChange={handleChange}
-                        onFocus={() => setFocusedField("subject")}
-                        onBlur={() => setFocusedField(null)}
+                        id="subject" name="subject"
+                        value={formData.subject} onChange={handleChange}
+                        onFocus={() => setFocusedField("subject")} onBlur={() => setFocusedField(null)}
                         className={`${inputClasses("subject")} appearance-none cursor-pointer`}
                       >
-                        <option value="">Select a topic</option>
-                        <option value="general">General Inquiry</option>
-                        <option value="partnership">Partnership</option>
-                        <option value="distribution">Distribution</option>
-                        <option value="support">Technical Support</option>
+                        <option value="">{f.subject_placeholder}</option>
+                        {f.subject_options.map((opt) => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
                       </select>
                     </div>
                   </div>
 
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium text-gray-600 mb-2">
-                      Your Message <span className="text-red-400">*</span>
+                      {f.message_label} <span className="text-red-400">*</span>
                     </label>
                     <textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      onFocus={() => setFocusedField("message")}
-                      onBlur={() => setFocusedField(null)}
-                      rows={5}
-                      className={`${inputClasses("message")} resize-none`}
-                      placeholder="Tell us about your project, needs, or questions..."
+                      id="message" name="message"
+                      value={formData.message} onChange={handleChange}
+                      onFocus={() => setFocusedField("message")} onBlur={() => setFocusedField(null)}
+                      rows={5} className={`${inputClasses("message")} resize-none`}
+                      placeholder={f.message_placeholder}
                     />
                   </div>
 
@@ -277,9 +224,9 @@ export default function ContactSection() {
                     type="submit"
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full bg-gradient-to-r from-[#2F6E49] to-[#3D8B5E] text-white px-8 py-4 rounded-xl hover:shadow-[0_8px_30px_rgba(47,110,73,0.25)] transition-all duration-300 flex items-center justify-center gap-3 group text-sm font-semibold tracking-wide"
+                    className="w-full bg-gradient-to-r from-[#037338] to-[#05964a] text-white px-8 py-4 rounded-xl hover:shadow-[0_8px_30px_rgba(3,115,56,0.25)] transition-all duration-300 flex items-center justify-center gap-3 group text-sm font-semibold tracking-wide"
                   >
-                    <span>Send Message</span>
+                    <span>{f.submit}</span>
                     <FaPaperPlane className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform" />
                   </motion.button>
                 </form>
@@ -287,46 +234,50 @@ export default function ContactSection() {
             </div>
           </motion.div>
 
-          {/* Contact Info — takes 2 columns */}
+          {/* Contact Info */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="lg:col-span-2 space-y-6"
           >
-            {/* Contact cards */}
             <motion.div
               variants={containerVariants}
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
               className="space-y-4"
             >
-              {contactInfo.map((info) => (
-                <motion.a
-                  key={info.label}
-                  href={info.link}
-                  target={info.link.startsWith("http") ? "_blank" : undefined}
-                  rel={info.link.startsWith("http") ? "noopener noreferrer" : undefined}
-                  variants={itemVariants}
-                  whileHover={{ x: 4 }}
-                  className={`flex items-center gap-5 p-5 bg-white rounded-2xl shadow-[0_2px_16px_rgba(47,110,73,0.04)] border border-gray-100 hover:border-[#8CCB8A]/30 hover:shadow-[0_8px_30px_rgba(47,110,73,0.08)] transition-all duration-300 group ${info.bgHover}`}
-                >
-                  <div
-                    className={`flex-shrink-0 w-14 h-14 bg-gradient-to-br ${info.color} rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}
+              {c.info.map((info) => {
+                const Icon = INFO_ICONS[info.key];
+                return (
+                  <motion.a
+                    key={info.key}
+                    href={info.link}
+                    target={info.link?.startsWith("http") ? "_blank" : undefined}
+                    rel={info.link?.startsWith("http") ? "noopener noreferrer" : undefined}
+                    variants={itemVariants}
+                    whileHover={{ x: isRTL ? -4 : 4 }}
+                    className={`flex items-center gap-5 p-5 bg-white rounded-2xl shadow-[0_2px_16px_rgba(3,115,56,0.04)] border border-gray-100 hover:border-[#96C422]/30 hover:shadow-[0_8px_30px_rgba(3,115,56,0.08)] transition-all duration-300 group ${INFO_HOVER[info.key]}`}
                   >
-                    <info.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs tracking-wider uppercase text-gray-400 font-medium mb-0.5">
-                      {info.label}
+                    <div className={`flex-shrink-0 w-14 h-14 bg-gradient-to-br ${INFO_COLORS[info.key]} rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                      <Icon className="w-6 h-6 text-white" />
                     </div>
-                    <div className="text-gray-700 font-medium text-sm truncate group-hover:text-[#2F6E49] transition-colors">
-                      {info.value}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs tracking-wider uppercase text-gray-400 font-medium mb-0.5">
+                        {info.label}
+                      </div>
+                      <div className="text-gray-700 font-medium text-sm truncate group-hover:text-[#037338] transition-colors">
+                        {info.value}
+                      </div>
                     </div>
-                  </div>
-                  <FaArrowRight className="w-4 h-4 text-gray-300 group-hover:text-[#2F6E49] group-hover:translate-x-1 transition-all duration-300 flex-shrink-0" />
-                </motion.a>
-              ))}
+                    <FaArrowRight
+                      className={`w-4 h-4 text-gray-300 group-hover:text-[#037338] transition-all duration-300 flex-shrink-0 ${
+                        isRTL ? "rotate-180 group-hover:-translate-x-1" : "group-hover:translate-x-1"
+                      }`}
+                    />
+                  </motion.a>
+                );
+              })}
             </motion.div>
           </motion.div>
         </div>

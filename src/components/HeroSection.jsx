@@ -1,31 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaArrowRight, FaPhone } from "react-icons/fa";
-
-const stats = [
-  { number: "560+", text: "Active clients across Egypt" },
-  { number: "$700K+", text: "Annual distribution volume" },
-  { number: "$1.7M+", text: "In trusted partner relationships" },
-];
+import { useTranslation } from "@/context/LangContext";
 
 export default function HeroSection() {
-  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t, isRTL } = useTranslation();
 
   const scrollToSection = (sectionId) => {
     setIsMobileMenuOpen(false);
-    if (!sectionId) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
+    if (!sectionId) { window.scrollTo({ top: 0, behavior: "smooth" }); return; }
     const element = document.getElementById(sectionId);
     if (element) {
-      const headerOffset = 80;
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - headerOffset;
+      const offsetPosition = element.getBoundingClientRect().top + window.scrollY - 80;
       window.scrollTo({ top: offsetPosition, behavior: "smooth" });
     }
   };
@@ -39,11 +28,9 @@ export default function HeroSection() {
       <div className="absolute inset-0 z-0">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: "url('/images/hero.jfif')",
-          }}
+          style={{ backgroundImage: "url('/images/hero.jfif')" }}
         />
-        <div className="absolute inset-0 bg-linear-to-br from-[#2F6E49]/90 via-[#2F6E49]/70 to-[#8CCB8A]/60" />
+        <div className="absolute inset-0 bg-linear-to-br from-[#037338]/90 via-[#037338]/70 to-[#96C422]/60" />
       </div>
 
       {/* Content */}
@@ -55,8 +42,7 @@ export default function HeroSection() {
           className="space-y-8"
         >
           <h1 className="text-white max-w-4xl mx-auto">
-            Powering Egypt's
-            Agricultural Future
+            {t.hero.heading}
           </h1>
 
           <motion.p
@@ -65,7 +51,7 @@ export default function HeroSection() {
             transition={{ delay: 0.3, duration: 0.8 }}
             className="text-white/90 max-w-3xl mx-auto text-lg sm:text-xl"
           >
-            Valley Seeds bridges world-class seed genetics with the Egyptian farmer — backed by rigorous field science, dedicated agronomists, and digital transparency since 2018.
+            {t.hero.subheading}
           </motion.p>
 
           <motion.div
@@ -76,25 +62,26 @@ export default function HeroSection() {
           >
             <button
               onClick={() => scrollToSection("contact")}
-              className="group bg-white text-[#2F6E49] px-8 py-4 rounded-lg hover:bg-[#8CCB8A] hover:text-white transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl"
+              className="group bg-white text-[#037338] px-8 py-4 rounded-lg hover:bg-[#96C422] hover:text-white transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl"
             >
-              Request a Quote
-              <FaArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {t.hero.cta_primary}
+              <FaArrowRight
+                className={`w-5 h-5 transition-transform ${isRTL ? "rotate-180 group-hover:-translate-x-1" : "group-hover:translate-x-1"}`}
+              />
             </button>
 
             <button
               onClick={() => scrollToSection("contact")}
-
-              className="group bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white hover:text-[#2F6E49] transition-all duration-300 flex items-center gap-2"
+              className="group bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white hover:text-[#037338] transition-all duration-300 flex items-center gap-2"
             >
               <FaPhone className="w-5 h-5" />
-              Contact Us
+              {t.hero.cta_secondary}
             </button>
           </motion.div>
         </motion.div>
       </div>
 
-      {/* Stats Bar — Full Width, Split Number & Text, Improved UI */}
+      {/* Stats Bar */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -103,16 +90,16 @@ export default function HeroSection() {
       >
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/20">
-            {stats.map((stat, index) => (
+            {t.hero.stats.map((stat, index) => (
               <motion.div
-                key={stat.text}
+                key={index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2 + index * 0.15, duration: 0.6 }}
-                className="flex flex-col items-center justify-center py-8 sm:py-10 px-4 group"
+                className="flex flex-col items-center justify-center py-8 sm:py-10 px-4"
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-2 h-2 bg-[#8CCB8A] rounded-full animate-pulse flex-shrink-0" />
+                  <div className="w-2 h-2 bg-[#96C422] rounded-full animate-pulse flex-shrink-0" />
                   <motion.span
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
