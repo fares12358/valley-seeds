@@ -103,6 +103,7 @@ const ar = {
     eyebrow: "قيمنا الجوهرية",
     heading: "المبادئ التي",
     heading_accent: "تُوجّه كل قرار",
+    show_more: "عرض جميع القيم",
     values: [
       {
         name: "جودة لا تقبل المساومة",

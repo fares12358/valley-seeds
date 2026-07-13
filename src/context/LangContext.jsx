@@ -1,70 +1,82 @@
 "use client";
 
-/**
- * LangContext — src/context/LangContext.jsx
- *
- * Global language state for the entire app.
- * Provides:
- *   - lang         : "en" | "ar" (current locale)
- *   - dir          : "ltr" | "rtl"
- *   - isRTL        : boolean
- *   - t            : translation object for the current locale
- *   - setLang()    : switch language + persist to localStorage
- *
- * Used in layout.jsx to apply dir/lang to <html>.
- * Used in every component via useTranslation().
- */
-
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { getTranslations, DEFAULT_LOCALE, SUPPORTED_LOCALES, RTL_LOCALES } from "@/i18n/index";
+import {
+  getTranslations,
+  getTranslationsSync,
+  DEFAULT_LOCALE,
+  SUPPORTED_LOCALES,
+  RTL_LOCALES,
+  LOCALE_META,
+} from "@/i18n/index";
 
 const LangContext = createContext(null);
 
 export function LangProvider({ children }) {
-  const [lang, setLangState] = useState(DEFAULT_LOCALE);
+  const [lang,           setLangState]     = useState(DEFAULT_LOCALE);
+  const [t,              setT]             = useState(getTranslationsSync(DEFAULT_LOCALE));
+  const [contentLoading, setContentLoading] = useState(false);
 
-  // Initialise from localStorage on mount (client only)
+  // Restore persisted language on mount (client only — localStorage not available on server)
   useEffect(() => {
-    const stored = localStorage.getItem("vs_lang");
-    if (stored && SUPPORTED_LOCALES.includes(stored)) {
-      setLangState(stored);
+    try {
+      const stored = localStorage.getItem("vs_lang");
+      if (stored && SUPPORTED_LOCALES.includes(stored)) {
+        setLangState(stored);
+      }
+    } catch {
+      // localStorage blocked (e.g. private browsing) — use default
     }
   }, []);
 
-  // Apply dir + lang attributes to <html> whenever language changes
+  // Sync <html> dir + lang attribute
   useEffect(() => {
     const dir = RTL_LOCALES.includes(lang) ? "rtl" : "ltr";
     document.documentElement.setAttribute("lang", lang);
-    document.documentElement.setAttribute("dir", dir);
+    document.documentElement.setAttribute("dir",  dir);
+  }, [lang]);
+
+  // Fetch translations on language change
+  // Shows local fallback instantly, then overwrites with API data
+  useEffect(() => {
+    // Instant render with local content
+    setT(getTranslationsSync(lang));
+
+    // Async overwrite with API content (silently falls back if API is down)
+    setContentLoading(true);
+    getTranslations(lang)
+      .then((result) => {
+        if (result) setT(result);
+      })
+      .catch(() => {
+        // Already showing local fallback — nothing to do
+      })
+      .finally(() => setContentLoading(false));
   }, [lang]);
 
   const setLang = useCallback((newLang) => {
     if (!SUPPORTED_LOCALES.includes(newLang)) return;
-    localStorage.setItem("vs_lang", newLang);
+    try {
+      localStorage.setItem("vs_lang", newLang);
+    } catch {
+      // ignore
+    }
     setLangState(newLang);
   }, []);
 
   const isRTL = RTL_LOCALES.includes(lang);
-  const dir = isRTL ? "rtl" : "ltr";
-  const t = getTranslations(lang);
+  const dir   = isRTL ? "rtl" : "ltr";
 
   return (
-    <LangContext.Provider value={{ lang, dir, isRTL, t, setLang }}>
+    <LangContext.Provider value={{ lang, dir, isRTL, t, setLang, contentLoading, LOCALE_META }}>
       {children}
     </LangContext.Provider>
   );
 }
 
-/**
- * Primary hook — use in every component that needs translated text.
- *
- * @example
- *   const { t, isRTL, lang, setLang } = useTranslation();
- *   return <h1>{t.hero.heading}</h1>
- */
 export function useTranslation() {
   const ctx = useContext(LangContext);
-  if (!ctx) throw new Error("useTranslation must be used inside <LangProvider>");
+  if (!ctx) throw new Error("useTranslation must be inside <LangProvider>");
   return ctx;
 }
 

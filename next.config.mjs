@@ -6,6 +6,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      {
+        // Sprint 4: Cloudinary CDN for all uploaded images
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
     ],
   },
 };

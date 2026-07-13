@@ -1,48 +1,64 @@
-/**
- * i18n Loader — src/i18n/index.js
- *
- * This is the single integration point between the translation layer
- * and the rest of the app. It currently loads translations from local
- * files. When the backend CMS is ready, ONLY this file needs to change.
- *
- * ─── Future API migration (backend ready) ────────────────────────────
- *
- * Replace getTranslations() with an API fetch:
- *
- *   export async function getTranslations(lang) {
- *     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/content?lang=${lang}`)
- *     if (!res.ok) throw new Error('Failed to load translations')
- *     return res.json()
- *   }
- *
- * The LangContext and all components stay exactly as-is.
- * ─────────────────────────────────────────────────────────────────────
- */
-
 import en from "./locales/en.js";
 import ar from "./locales/ar.js";
 
-/** Supported locales — add new languages here only */
 export const SUPPORTED_LOCALES = ["en", "ar"];
-export const DEFAULT_LOCALE = "en";
+export const DEFAULT_LOCALE    = "en";
+export const RTL_LOCALES        = ["ar"];
 
-/** RTL locales */
-export const RTL_LOCALES = ["ar"];
-
-/** Locale metadata for the language switcher UI */
 export const LOCALE_META = {
-  en: { label: "EN", nativeLabel: "English", flag: "🇬🇧" },
-  ar: { label: "ع", nativeLabel: "العربية", flag: "🇪🇬" },
+  en: { label: "EN", nativeLabel: "English",  flag: "🇬🇧" },
+  ar: { label: "ع",  nativeLabel: "العربية", flag: "🇪🇬" },
 };
 
-const translations = { en, ar };
+// Local fallback objects — always available synchronously
+const LOCAL = { en, ar };
 
 /**
- * Returns the full translation object for the given locale.
- * Synchronous for now (local files). Will become async when API-driven.
+ * getTranslationsSync — immediate local fallback (no API call).
+ * Used by LangContext for the initial render to prevent content flash.
  */
-export function getTranslations(lang) {
-  return translations[lang] ?? translations[DEFAULT_LOCALE];
+export function getTranslationsSync(lang) {
+  return LOCAL[lang] ?? LOCAL[DEFAULT_LOCALE];
+}
+
+/**
+ * getTranslations — async, fetches from backend API.
+ * Falls back to local files if the API is unreachable.
+ *
+ * API migration note: this is the ONLY function to change when
+ * switching from local content to backend-driven content.
+ * All components read from LangContext.t — they never call this directly.
+ */
+export async function getTranslations(lang = DEFAULT_LOCALE) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  if (!apiUrl) {
+    // No API configured — use local files (dev without backend)
+    return getTranslationsSync(lang);
+  }
+
+  try {
+    const res = await fetch(`${apiUrl}/content`, {
+      cache: "no-store",  // always fresh — change to { next: { revalidate: 60 } } for ISR
+    });
+
+    if (!res.ok) throw new Error(`API responded with ${res.status}`);
+
+    const { data } = await res.json();
+
+    // Convert the array of Content documents into a keyed object
+    // matching the shape of en.js / ar.js
+    const content = {};
+    data.forEach((doc) => {
+      content[doc.section] = doc[lang] || doc.en;
+    });
+
+    // Merge: API data takes priority; local fills in any missing sections
+    return { ...getTranslationsSync(lang), ...content };
+  } catch (err) {
+    console.warn(`[i18n] API unavailable, using local fallback: ${err.message}`);
+    return getTranslationsSync(lang);
+  }
 }
 
 export default getTranslations;

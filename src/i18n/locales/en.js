@@ -105,6 +105,7 @@ const en = {
     eyebrow: "Core Values",
     heading: "The Principles That",
     heading_accent: "Guide Every Decision",
+    show_more: "Show All Values",
     values: [
       {
         name: "Uncompromising Quality",

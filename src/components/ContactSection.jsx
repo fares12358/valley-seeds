@@ -8,8 +8,14 @@ import {
   FaWhatsapp, FaArrowRight,
 } from "react-icons/fa";
 import { useTranslation } from "@/context/LangContext";
+import { submitContact } from "@/services/contact.service";
 
-const INFO_ICONS = { email: FaEnvelope, phone: FaPhone, whatsapp: FaWhatsapp, website: FaLink };
+const INFO_ICONS = {
+  email:    FaEnvelope,
+  phone:    FaPhone,
+  whatsapp: FaWhatsapp,
+  website:  FaLink,
+};
 const INFO_COLORS = {
   email:    "from-[#037338] to-[#05964a]",
   phone:    "from-[#037338] to-[#96C422]",
@@ -23,49 +29,64 @@ const INFO_HOVER = {
   website:  "hover:bg-[#96C422]/5",
 };
 
+const EMPTY_FORM = { name: "", email: "", phone: "", subject: "", message: "" };
+
 const containerVariants = {
-  hidden: { opacity: 0 },
+  hidden:  { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.3 } },
 };
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden:  { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
 export default function ContactSection() {
-  const ref = useRef(null);
+  const ref      = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const { t, isRTL } = useTranslation();
   const c = t.contact;
   const f = c.form;
 
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
+  const [formData,     setFormData]     = useState(EMPTY_FORM);
+  const [submitted,    setSubmitted]    = useState(false);
+  const [isSending,    setIsSending]    = useState(false);
+  const [error,        setError]        = useState("");
   const [focusedField, setFocusedField] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
       setError(f.error);
       return;
     }
     setError("");
-    setSubmitted(true);
-    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+    setIsSending(true);
+    try {
+      await submitContact(formData);
+      setSubmitted(true);
+      setFormData(EMPTY_FORM);
+    } catch {
+      setError(f.error);
+    } finally {
+      setIsSending(false);
+    }
   };
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const inputClasses = (fieldName) =>
+  const inputClasses = (field) =>
     `w-full px-5 py-4 bg-gray-50 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-      focusedField === fieldName
+      focusedField === field
         ? "border-[#037338] bg-white shadow-[0_0_0_4px_rgba(3,115,56,0.08)]"
         : "border-gray-200 hover:border-gray-300"
     }`;
 
   return (
-    <section id="contact" className="relative py-24 lg:py-32 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden">
+    <section
+      id="contact"
+      className="relative py-24 lg:py-32 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden"
+    >
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#96C422]/5 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#037338]/5 rounded-full blur-3xl" />
 
@@ -83,11 +104,11 @@ export default function ContactSection() {
             {c.eyebrow}
             <span className="w-8 h-px bg-[#96C422]" />
           </span>
-
           <h2 className="text-[#037338] mb-6 font-serif text-3xl sm:text-4xl lg:text-5xl leading-tight">
-            {c.heading_line1}<br className="hidden sm:block" /> {c.heading_line2}
+            {c.heading_line1}
+            <br className="hidden sm:block" />
+            {" "}{c.heading_line2}
           </h2>
-
           <p className="text-gray-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
             {c.subheading}
           </p>
@@ -154,22 +175,22 @@ export default function ContactSection() {
 
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-600 mb-2">
+                      <label htmlFor="c-name" className="block text-sm font-medium text-gray-600 mb-2">
                         {f.name_label} <span className="text-red-400">*</span>
                       </label>
                       <input
-                        type="text" id="name" name="name"
+                        type="text" id="c-name" name="name"
                         value={formData.name} onChange={handleChange}
                         onFocus={() => setFocusedField("name")} onBlur={() => setFocusedField(null)}
                         className={inputClasses("name")} placeholder={f.name_placeholder}
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-600 mb-2">
+                      <label htmlFor="c-email" className="block text-sm font-medium text-gray-600 mb-2">
                         {f.email_label} <span className="text-red-400">*</span>
                       </label>
                       <input
-                        type="email" id="email" name="email"
+                        type="email" id="c-email" name="email"
                         value={formData.email} onChange={handleChange}
                         onFocus={() => setFocusedField("email")} onBlur={() => setFocusedField(null)}
                         className={inputClasses("email")} placeholder={f.email_placeholder}
@@ -179,28 +200,28 @@ export default function ContactSection() {
 
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-600 mb-2">
+                      <label htmlFor="c-phone" className="block text-sm font-medium text-gray-600 mb-2">
                         {f.phone_label}
                       </label>
                       <input
-                        type="tel" id="phone" name="phone"
+                        type="tel" id="c-phone" name="phone"
                         value={formData.phone} onChange={handleChange}
                         onFocus={() => setFocusedField("phone")} onBlur={() => setFocusedField(null)}
                         className={inputClasses("phone")} placeholder={f.phone_placeholder}
                       />
                     </div>
                     <div>
-                      <label htmlFor="subject" className="block text-sm font-medium text-gray-600 mb-2">
+                      <label htmlFor="c-subject" className="block text-sm font-medium text-gray-600 mb-2">
                         {f.subject_label}
                       </label>
                       <select
-                        id="subject" name="subject"
+                        id="c-subject" name="subject"
                         value={formData.subject} onChange={handleChange}
                         onFocus={() => setFocusedField("subject")} onBlur={() => setFocusedField(null)}
                         className={`${inputClasses("subject")} appearance-none cursor-pointer`}
                       >
                         <option value="">{f.subject_placeholder}</option>
-                        {f.subject_options.map((opt) => (
+                        {(f.subject_options || []).map((opt) => (
                           <option key={opt.value} value={opt.value}>{opt.label}</option>
                         ))}
                       </select>
@@ -208,11 +229,11 @@ export default function ContactSection() {
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-600 mb-2">
+                    <label htmlFor="c-message" className="block text-sm font-medium text-gray-600 mb-2">
                       {f.message_label} <span className="text-red-400">*</span>
                     </label>
                     <textarea
-                      id="message" name="message"
+                      id="c-message" name="message"
                       value={formData.message} onChange={handleChange}
                       onFocus={() => setFocusedField("message")} onBlur={() => setFocusedField(null)}
                       rows={5} className={`${inputClasses("message")} resize-none`}
@@ -222,19 +243,24 @@ export default function ContactSection() {
 
                   <motion.button
                     type="submit"
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full bg-gradient-to-r from-[#037338] to-[#05964a] text-white px-8 py-4 rounded-xl hover:shadow-[0_8px_30px_rgba(3,115,56,0.25)] transition-all duration-300 flex items-center justify-center gap-3 group text-sm font-semibold tracking-wide"
+                    disabled={isSending}
+                    whileHover={{ scale: isSending ? 1 : 1.01 }}
+                    whileTap={{ scale: isSending ? 1 : 0.98 }}
+                    className="w-full bg-gradient-to-r from-[#037338] to-[#05964a] text-white px-8 py-4 rounded-xl hover:shadow-[0_8px_30px_rgba(3,115,56,0.25)] transition-all duration-300 flex items-center justify-center gap-3 group text-sm font-semibold tracking-wide disabled:opacity-60"
                   >
-                    <span>{f.submit}</span>
-                    <FaPaperPlane className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform" />
+                    {isSending ? (
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <FaPaperPlane className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform" />
+                    )}
+                    <span>{isSending ? "Sending..." : f.submit}</span>
                   </motion.button>
                 </form>
               )}
             </div>
           </motion.div>
 
-          {/* Contact Info */}
+          {/* Contact info cards */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -247,8 +273,8 @@ export default function ContactSection() {
               animate={isInView ? "visible" : "hidden"}
               className="space-y-4"
             >
-              {c.info.map((info) => {
-                const Icon = INFO_ICONS[info.key];
+              {(c.info || []).map((info) => {
+                const Icon = INFO_ICONS[info.key] || FaEnvelope;
                 return (
                   <motion.a
                     key={info.key}
@@ -257,9 +283,11 @@ export default function ContactSection() {
                     rel={info.link?.startsWith("http") ? "noopener noreferrer" : undefined}
                     variants={itemVariants}
                     whileHover={{ x: isRTL ? -4 : 4 }}
-                    className={`flex items-center gap-5 p-5 bg-white rounded-2xl shadow-[0_2px_16px_rgba(3,115,56,0.04)] border border-gray-100 hover:border-[#96C422]/30 hover:shadow-[0_8px_30px_rgba(3,115,56,0.08)] transition-all duration-300 group ${INFO_HOVER[info.key]}`}
+                    className={`flex items-center gap-5 p-5 bg-white rounded-2xl shadow-[0_2px_16px_rgba(3,115,56,0.04)] border border-gray-100 hover:border-[#96C422]/30 hover:shadow-[0_8px_30px_rgba(3,115,56,0.08)] transition-all duration-300 group ${INFO_HOVER[info.key] || ""}`}
                   >
-                    <div className={`flex-shrink-0 w-14 h-14 bg-gradient-to-br ${INFO_COLORS[info.key]} rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                    <div
+                      className={`flex-shrink-0 w-14 h-14 bg-gradient-to-br ${INFO_COLORS[info.key] || "from-[#037338] to-[#96C422]"} rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}
+                    >
                       <Icon className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -272,7 +300,9 @@ export default function ContactSection() {
                     </div>
                     <FaArrowRight
                       className={`w-4 h-4 text-gray-300 group-hover:text-[#037338] transition-all duration-300 flex-shrink-0 ${
-                        isRTL ? "rotate-180 group-hover:-translate-x-1" : "group-hover:translate-x-1"
+                        isRTL
+                          ? "rotate-180 group-hover:-translate-x-1"
+                          : "group-hover:translate-x-1"
                       }`}
                     />
                   </motion.a>
