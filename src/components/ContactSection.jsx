@@ -3,26 +3,23 @@
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import {
-  FaEnvelope, FaPhone, FaMapMarkerAlt,
+  FaEnvelope, FaPhone,
   FaPaperPlane, FaLink, FaCheckCircle,
   FaWhatsapp, FaArrowRight,
 } from "react-icons/fa";
 import { useTranslation } from "@/context/LangContext";
 import { submitContact } from "@/services/contact.service";
 
-const INFO_ICONS = {
-  email:    FaEnvelope,
-  phone:    FaPhone,
-  whatsapp: FaWhatsapp,
-  website:  FaLink,
-};
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const INFO_ICONS  = { email: FaEnvelope, phone: FaPhone, whatsapp: FaWhatsapp, website: FaLink };
 const INFO_COLORS = {
   email:    "from-[#037338] to-[#05964a]",
   phone:    "from-[#037338] to-[#96C422]",
   whatsapp: "from-[#25D366] to-[#128C7E]",
   website:  "from-[#96C422] to-[#b8e032]",
 };
-const INFO_HOVER = {
+const INFO_HOVER  = {
   email:    "hover:bg-[#037338]/5",
   phone:    "hover:bg-[#037338]/5",
   whatsapp: "hover:bg-[#25D366]/5",
@@ -62,6 +59,10 @@ export default function ContactSection() {
       setError(f.error);
       return;
     }
+    if (!EMAIL_RE.test(formData.email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
     setError("");
     setIsSending(true);
     try {
@@ -91,7 +92,6 @@ export default function ContactSection() {
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#037338]/5 rounded-full blur-3xl" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <motion.div
           ref={ref}
           initial={{ opacity: 0, y: 30 }}
@@ -178,23 +178,17 @@ export default function ContactSection() {
                       <label htmlFor="c-name" className="block text-sm font-medium text-gray-600 mb-2">
                         {f.name_label} <span className="text-red-400">*</span>
                       </label>
-                      <input
-                        type="text" id="c-name" name="name"
-                        value={formData.name} onChange={handleChange}
+                      <input type="text" id="c-name" name="name" value={formData.name} onChange={handleChange}
                         onFocus={() => setFocusedField("name")} onBlur={() => setFocusedField(null)}
-                        className={inputClasses("name")} placeholder={f.name_placeholder}
-                      />
+                        className={inputClasses("name")} placeholder={f.name_placeholder} />
                     </div>
                     <div>
                       <label htmlFor="c-email" className="block text-sm font-medium text-gray-600 mb-2">
                         {f.email_label} <span className="text-red-400">*</span>
                       </label>
-                      <input
-                        type="email" id="c-email" name="email"
-                        value={formData.email} onChange={handleChange}
+                      <input type="email" id="c-email" name="email" value={formData.email} onChange={handleChange}
                         onFocus={() => setFocusedField("email")} onBlur={() => setFocusedField(null)}
-                        className={inputClasses("email")} placeholder={f.email_placeholder}
-                      />
+                        className={inputClasses("email")} placeholder={f.email_placeholder} />
                     </div>
                   </div>
 
@@ -203,20 +197,15 @@ export default function ContactSection() {
                       <label htmlFor="c-phone" className="block text-sm font-medium text-gray-600 mb-2">
                         {f.phone_label}
                       </label>
-                      <input
-                        type="tel" id="c-phone" name="phone"
-                        value={formData.phone} onChange={handleChange}
+                      <input type="tel" id="c-phone" name="phone" value={formData.phone} onChange={handleChange}
                         onFocus={() => setFocusedField("phone")} onBlur={() => setFocusedField(null)}
-                        className={inputClasses("phone")} placeholder={f.phone_placeholder}
-                      />
+                        className={inputClasses("phone")} placeholder={f.phone_placeholder} />
                     </div>
                     <div>
                       <label htmlFor="c-subject" className="block text-sm font-medium text-gray-600 mb-2">
                         {f.subject_label}
                       </label>
-                      <select
-                        id="c-subject" name="subject"
-                        value={formData.subject} onChange={handleChange}
+                      <select id="c-subject" name="subject" value={formData.subject} onChange={handleChange}
                         onFocus={() => setFocusedField("subject")} onBlur={() => setFocusedField(null)}
                         className={`${inputClasses("subject")} appearance-none cursor-pointer`}
                       >
@@ -232,27 +221,22 @@ export default function ContactSection() {
                     <label htmlFor="c-message" className="block text-sm font-medium text-gray-600 mb-2">
                       {f.message_label} <span className="text-red-400">*</span>
                     </label>
-                    <textarea
-                      id="c-message" name="message"
-                      value={formData.message} onChange={handleChange}
+                    <textarea id="c-message" name="message" value={formData.message} onChange={handleChange}
                       onFocus={() => setFocusedField("message")} onBlur={() => setFocusedField(null)}
                       rows={5} className={`${inputClasses("message")} resize-none`}
-                      placeholder={f.message_placeholder}
-                    />
+                      placeholder={f.message_placeholder} />
                   </div>
 
                   <motion.button
-                    type="submit"
-                    disabled={isSending}
+                    type="submit" disabled={isSending}
                     whileHover={{ scale: isSending ? 1 : 1.01 }}
                     whileTap={{ scale: isSending ? 1 : 0.98 }}
                     className="w-full bg-gradient-to-r from-[#037338] to-[#05964a] text-white px-8 py-4 rounded-xl hover:shadow-[0_8px_30px_rgba(3,115,56,0.25)] transition-all duration-300 flex items-center justify-center gap-3 group text-sm font-semibold tracking-wide disabled:opacity-60"
                   >
-                    {isSending ? (
-                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    ) : (
-                      <FaPaperPlane className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform" />
-                    )}
+                    {isSending
+                      ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      : <FaPaperPlane className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform" />
+                    }
                     <span>{isSending ? "Sending..." : f.submit}</span>
                   </motion.button>
                 </form>
@@ -267,12 +251,7 @@ export default function ContactSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="lg:col-span-2 space-y-6"
           >
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
-              className="space-y-4"
-            >
+            <motion.div variants={containerVariants} initial="hidden" animate={isInView ? "visible" : "hidden"} className="space-y-4">
               {(c.info || []).map((info) => {
                 const Icon = INFO_ICONS[info.key] || FaEnvelope;
                 return (
@@ -285,26 +264,14 @@ export default function ContactSection() {
                     whileHover={{ x: isRTL ? -4 : 4 }}
                     className={`flex items-center gap-5 p-5 bg-white rounded-2xl shadow-[0_2px_16px_rgba(3,115,56,0.04)] border border-gray-100 hover:border-[#96C422]/30 hover:shadow-[0_8px_30px_rgba(3,115,56,0.08)] transition-all duration-300 group ${INFO_HOVER[info.key] || ""}`}
                   >
-                    <div
-                      className={`flex-shrink-0 w-14 h-14 bg-gradient-to-br ${INFO_COLORS[info.key] || "from-[#037338] to-[#96C422]"} rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}
-                    >
+                    <div className={`flex-shrink-0 w-14 h-14 bg-gradient-to-br ${INFO_COLORS[info.key] || "from-[#037338] to-[#96C422]"} rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                       <Icon className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs tracking-wider uppercase text-gray-400 font-medium mb-0.5">
-                        {info.label}
-                      </div>
-                      <div className="text-gray-700 font-medium text-sm truncate group-hover:text-[#037338] transition-colors">
-                        {info.value}
-                      </div>
+                      <div className="text-xs tracking-wider uppercase text-gray-400 font-medium mb-0.5">{info.label}</div>
+                      <div className="text-gray-700 font-medium text-sm truncate group-hover:text-[#037338] transition-colors">{info.value}</div>
                     </div>
-                    <FaArrowRight
-                      className={`w-4 h-4 text-gray-300 group-hover:text-[#037338] transition-all duration-300 flex-shrink-0 ${
-                        isRTL
-                          ? "rotate-180 group-hover:-translate-x-1"
-                          : "group-hover:translate-x-1"
-                      }`}
-                    />
+                    <FaArrowRight className={`w-4 h-4 text-gray-300 group-hover:text-[#037338] transition-all duration-300 flex-shrink-0 ${isRTL ? "rotate-180 group-hover:-translate-x-1" : "group-hover:translate-x-1"}`} />
                   </motion.a>
                 );
               })}

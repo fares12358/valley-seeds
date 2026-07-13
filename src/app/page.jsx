@@ -1,15 +1,15 @@
 "use client";
 
-import HeroSection from "@/components/HeroSection";
-import AboutSection from "@/components/AboutSection";
-import WhyUsSection from "@/components/WhyUsSection";
-import MissionSection from "@/components/MissionSection";
-import ServicesSection from "@/components/ServicesSection";
-import GeneticSupplyChainSection from "@/components/GeneticSupplyChainSection";
+import HeroSection       from "@/components/HeroSection";
+import AboutSection      from "@/components/AboutSection";
+import WhyUsSection      from "@/components/WhyUsSection";
+import MissionSection    from "@/components/MissionSection";
+import ServicesSection   from "@/components/ServicesSection";
+import TechnologySection from "@/components/TechnologySection";
 import BlockchainSection from "@/components/BlockchainSection";
-import ContactSection from "@/components/ContactSection";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import ContactSection    from "@/components/ContactSection";
+import Header            from "@/components/Header";
+import Footer            from "@/components/Footer";
 
 export default function HomePage() {
   return (
@@ -21,7 +21,7 @@ export default function HomePage() {
         <WhyUsSection />
         <MissionSection />
         <ServicesSection />
-        <GeneticSupplyChainSection />
+        <TechnologySection />
         <BlockchainSection />
         <ContactSection />
       </main>

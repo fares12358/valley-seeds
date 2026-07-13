@@ -13,11 +13,10 @@ import {
 const LangContext = createContext(null);
 
 export function LangProvider({ children }) {
-  const [lang,           setLangState]     = useState(DEFAULT_LOCALE);
-  const [t,              setT]             = useState(getTranslationsSync(DEFAULT_LOCALE));
-  const [contentLoading, setContentLoading] = useState(false);
+  const [lang, setLangState] = useState(DEFAULT_LOCALE);
+  const [t,    setT]         = useState(getTranslationsSync(DEFAULT_LOCALE));
 
-  // Restore persisted language on mount (client only — localStorage not available on server)
+  // Restore persisted language on mount (client only)
   useEffect(() => {
     try {
       const stored = localStorage.getItem("vs_lang");
@@ -25,42 +24,29 @@ export function LangProvider({ children }) {
         setLangState(stored);
       }
     } catch {
-      // localStorage blocked (e.g. private browsing) — use default
+      // localStorage blocked (private browsing) — use default
     }
   }, []);
 
-  // Sync <html> dir + lang attribute
+  // Sync <html> dir + lang attributes
   useEffect(() => {
     const dir = RTL_LOCALES.includes(lang) ? "rtl" : "ltr";
     document.documentElement.setAttribute("lang", lang);
     document.documentElement.setAttribute("dir",  dir);
   }, [lang]);
 
-  // Fetch translations on language change
-  // Shows local fallback instantly, then overwrites with API data
+  // Load translations: instant local fallback, then async API overwrite
   useEffect(() => {
-    // Instant render with local content
-    setT(getTranslationsSync(lang));
+    setT(getTranslationsSync(lang)); // immediate — no flash
 
-    // Async overwrite with API content (silently falls back if API is down)
-    setContentLoading(true);
     getTranslations(lang)
-      .then((result) => {
-        if (result) setT(result);
-      })
-      .catch(() => {
-        // Already showing local fallback — nothing to do
-      })
-      .finally(() => setContentLoading(false));
+      .then((result) => { if (result) setT(result); })
+      .catch(() => { /* already showing local fallback */ });
   }, [lang]);
 
   const setLang = useCallback((newLang) => {
     if (!SUPPORTED_LOCALES.includes(newLang)) return;
-    try {
-      localStorage.setItem("vs_lang", newLang);
-    } catch {
-      // ignore
-    }
+    try { localStorage.setItem("vs_lang", newLang); } catch { /* ignore */ }
     setLangState(newLang);
   }, []);
 
@@ -68,7 +54,7 @@ export function LangProvider({ children }) {
   const dir   = isRTL ? "rtl" : "ltr";
 
   return (
-    <LangContext.Provider value={{ lang, dir, isRTL, t, setLang, contentLoading, LOCALE_META }}>
+    <LangContext.Provider value={{ lang, dir, isRTL, t, setLang, LOCALE_META }}>
       {children}
     </LangContext.Provider>
   );

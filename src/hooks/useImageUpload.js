@@ -12,12 +12,8 @@ export function useImageUpload() {
     setError(null);
 
     try {
-      const formData = new FormData();
-      formData.append("image", file);
-
-      // Use fetch directly so we can track upload progress via ReadableStream
-      // Axios onUploadProgress is unreliable in some Next.js environments
-      const result = await uploadImage(file, folder);
+      // Pass onProgress callback — axios onUploadProgress provides real intermediate values
+      const result = await uploadImage(file, folder, (pct) => setProgress(pct));
       setProgress(100);
       return result; // { url, publicId }
     } catch (err) {

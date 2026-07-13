@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Inbox, Trash2, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import {
+  Inbox, Trash2, ChevronDown, ChevronUp,
+  Loader2, MailOpen, Mail as MailClosed,
+} from "lucide-react";
 import toast from "react-hot-toast";
-import EmptyState from "@/components/dashboard/EmptyState";
+import EmptyState  from "@/components/dashboard/EmptyState";
 import ConfirmModal from "@/components/dashboard/ConfirmModal";
 import { useMessages } from "@/hooks/useMessages";
 
@@ -21,7 +24,8 @@ function formatDate(dateStr) {
 }
 
 export default function MessagesPage() {
-  const { messages, loading, error, unreadCount, markRead, deleteMsg } = useMessages();
+  const { messages, loading, error, unreadCount, markRead, toggleRead, deleteMsg } = useMessages();
+
   const [filter,       setFilter]       = useState("All");
   const [expanded,     setExpanded]     = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -35,8 +39,14 @@ export default function MessagesPage() {
 
   const handleRowClick = async (id) => {
     const msg = messages.find((m) => m._id === id);
+    // Auto-mark as read when expanding
     if (msg && !msg.read) await markRead(id);
     setExpanded((prev) => (prev === id ? null : id));
+  };
+
+  const handleToggleRead = async (e, id) => {
+    e.stopPropagation();
+    await toggleRead(id);
   };
 
   const handleDelete = async () => {
@@ -91,7 +101,7 @@ export default function MessagesPage() {
           ))}
         </div>
         <span className="text-sm text-gray-400">
-          {filtered.length} message{filtered.length !== 1 ? "s" : ""}
+          {filtered.length} {filtered.length === 1 ? "message" : "messages"}
         </span>
       </div>
 
@@ -114,7 +124,7 @@ export default function MessagesPage() {
               className={`border rounded-xl overflow-hidden transition-all duration-200 ${
                 message.read
                   ? "border-gray-100 bg-white"
-                  : "border-[#037338]/20 bg-[#037338]/3"
+                  : "border-[#037338]/20 bg-[#037338]/[0.03]"
               }`}
             >
               {/* Row header */}
@@ -122,6 +132,7 @@ export default function MessagesPage() {
                 className="flex items-center gap-3 px-5 py-4 cursor-pointer hover:bg-gray-50/80 transition-colors"
                 onClick={() => handleRowClick(message._id)}
               >
+                {/* Unread dot */}
                 <div
                   className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors ${
                     message.read ? "bg-gray-200" : "bg-[#96C422]"
@@ -130,13 +141,7 @@ export default function MessagesPage() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span
-                      className={`text-sm ${
-                        message.read
-                          ? "font-medium text-gray-700"
-                          : "font-semibold text-gray-900"
-                      }`}
-                    >
+                    <span className={`text-sm ${message.read ? "font-medium text-gray-700" : "font-semibold text-gray-900"}`}>
                       {message.name}
                     </span>
                     <span className="text-xs text-gray-400">{message.email}</span>
@@ -146,19 +151,33 @@ export default function MessagesPage() {
                       </span>
                     )}
                   </div>
-                  <p
-                    className={`text-sm truncate mt-0.5 ${
-                      message.read ? "text-gray-400" : "text-gray-600"
-                    }`}
-                  >
+                  <p className={`text-sm truncate mt-0.5 ${message.read ? "text-gray-400" : "text-gray-600"}`}>
                     {message.message}
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-xs text-gray-400 hidden sm:block">
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <span className="text-xs text-gray-400 hidden sm:block mr-1">
                     {formatDate(message.createdAt)}
                   </span>
+
+                  {/* Toggle read/unread */}
+                  <button
+                    onClick={(e) => handleToggleRead(e, message._id)}
+                    className={`p-1.5 rounded-lg transition-colors ${
+                      message.read
+                        ? "text-gray-300 hover:text-[#037338] hover:bg-[#037338]/8"
+                        : "text-[#037338] hover:text-gray-400 hover:bg-gray-100"
+                    }`}
+                    title={message.read ? "Mark as unread" : "Mark as read"}
+                  >
+                    {message.read
+                      ? <MailClosed size={15} />
+                      : <MailOpen  size={15} />
+                    }
+                  </button>
+
+                  {/* Delete */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -169,11 +188,12 @@ export default function MessagesPage() {
                   >
                     <Trash2 size={15} />
                   </button>
-                  {expanded === message._id ? (
-                    <ChevronUp size={16} className="text-gray-400" />
-                  ) : (
-                    <ChevronDown size={16} className="text-gray-400" />
-                  )}
+
+                  {/* Expand chevron */}
+                  {expanded === message._id
+                    ? <ChevronUp   size={16} className="text-gray-400" />
+                    : <ChevronDown size={16} className="text-gray-400" />
+                  }
                 </div>
               </div>
 
@@ -197,15 +217,19 @@ export default function MessagesPage() {
                         {formatDate(message.createdAt)}
                       </span>
                     </div>
+
                     <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
                       {message.message}
                     </div>
-                    <a
-                      href={`mailto:${message.email}?subject=Re: ${message.subject || "Your inquiry"}`}
-                      className="inline-flex items-center gap-1.5 text-sm font-medium text-[#037338] hover:text-[#025c2e] transition-colors"
-                    >
-                      Reply via email →
-                    </a>
+
+                    <div className="flex items-center gap-3">
+                      <a
+                        href={`mailto:${message.email}?subject=Re: ${message.subject || "Your inquiry"}`}
+                        className="inline-flex items-center gap-1.5 text-sm font-medium text-[#037338] hover:text-[#025c2e] transition-colors"
+                      >
+                        Reply via email →
+                      </a>
+                    </div>
                   </div>
                 </div>
               )}

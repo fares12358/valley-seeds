@@ -5,8 +5,9 @@ export const getMessages = async (params = {}) => {
   return data.data; // { messages, total, unreadCount }
 };
 
-export const markRead = async (id) => {
-  const { data } = await api.patch(`/contact/messages/${id}`, { read: true });
+// Toggle read state — pass read: true or read: false
+export const setReadState = async (id, read) => {
+  const { data } = await api.patch(`/contact/messages/${id}`, { read });
   return data.data;
 };
 

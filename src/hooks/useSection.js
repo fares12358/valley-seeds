@@ -1,7 +1,20 @@
 import { useState, useEffect, useCallback } from "react";
 import { getSection, updateSection } from "@/services/content.service";
+import { invalidateTranslationCache } from "@/i18n/index";
 import toast from "react-hot-toast";
 
+/**
+ * ARCHITECTURE NOTE — Dual State:
+ * useSection owns the "server truth" copy (last saved state).
+ * SectionForm owns its own formData copy (live editing state).
+ * onSave(formData) passes SectionForm's copy to save(payload) here
+ * so the hook saves what the user typed, not what was last fetched.
+ * This is intentional — do not merge these into one state.
+ *
+ * save(payload?) — payload is the form's local copy passed from SectionForm.
+ * Falls back to hook's internal data only when called programmatically
+ * without a form (e.g. keyboard shortcut or auto-save).
+ */
 export function useSection(section) {
   const [data,      setData]      = useState(null);
   const [savedData, setSavedData] = useState(null);
@@ -49,11 +62,6 @@ export function useSection(section) {
     setData((prev) => ({ ...prev, images }));
   }, []);
 
-  /**
-   * save(payload?) — accepts an optional payload from SectionForm.
-   * SectionForm owns its own formData copy and passes it here on save.
-   * If no payload given, falls back to the hook's own data state.
-   */
   const save = useCallback(async (payload) => {
     const toSave = payload || data;
     if (!toSave) return;
@@ -66,6 +74,10 @@ export function useSection(section) {
       };
       setData(saved);
       setSavedData(saved);
+
+      // Bust the i18n cache so the public site picks up fresh content on next visit
+      invalidateTranslationCache();
+
       toast.success("Saved successfully");
     } catch (err) {
       toast.error(err.response?.data?.message || "Save failed");

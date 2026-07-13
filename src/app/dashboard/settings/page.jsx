@@ -14,6 +14,7 @@ const DEFAULTS = {
   whatsapp: "+20 128 763 6986", website: "www.valley-seeds.com", location: "Cairo, Egypt",
   socialLinks: { facebook: "", linkedin: "", instagram: "", whatsapp: "https://wa.me/201287636986" },
   logoUrl: "", logoWhiteUrl: "",
+  logoPublicId: "", logoWhitePublicId: "",
 };
 
 const INPUT = "w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-sm " +
@@ -75,13 +76,7 @@ export default function SettingsPage() {
           <h2 className="text-base font-semibold text-gray-800">Brand Identity</h2>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Brand name</label>
-            <input
-              type="text"
-              value={settings.brandName || ""}
-              onChange={(e) => set("brandName", e.target.value)}
-              placeholder="Valley Seeds"
-              className={INPUT}
-            />
+            <input type="text" value={settings.brandName || ""} onChange={(e) => set("brandName", e.target.value)} placeholder="Valley Seeds" className={INPUT} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {[
@@ -93,19 +88,8 @@ export default function SettingsPage() {
                   {label} <span className="text-gray-400 font-normal">({hint})</span>
                 </label>
                 <div className="flex items-center gap-3">
-                  <input
-                    type="color"
-                    value={settings[key] || d}
-                    onChange={(e) => set(key, e.target.value)}
-                    className="w-10 h-10 rounded-lg border-2 border-gray-200 cursor-pointer bg-gray-50 p-0.5"
-                  />
-                  <input
-                    type="text"
-                    value={settings[key] || ""}
-                    onChange={(e) => set(key, e.target.value)}
-                    placeholder={d}
-                    className={INPUT + " font-mono"}
-                  />
+                  <input type="color" value={settings[key] || d} onChange={(e) => set(key, e.target.value)} className="w-10 h-10 rounded-lg border-2 border-gray-200 cursor-pointer bg-gray-50 p-0.5" />
+                  <input type="text" value={settings[key] || ""} onChange={(e) => set(key, e.target.value)} placeholder={d} className={INPUT + " font-mono"} />
                 </div>
               </div>
             ))}
@@ -124,25 +108,13 @@ export default function SettingsPage() {
             ].map(({ key, Icon, label, type, ph }) => (
               <div key={key} className="relative">
                 <Icon size={16} className="absolute left-3.5 top-3.5 text-gray-400" />
-                <input
-                  type={type}
-                  value={settings[key] || ""}
-                  onChange={(e) => set(key, e.target.value)}
-                  placeholder={ph}
-                  className={INPUT + " pl-10"}
-                />
+                <input type={type} value={settings[key] || ""} onChange={(e) => set(key, e.target.value)} placeholder={ph} className={INPUT + " pl-10"} />
                 <span className="block text-xs text-gray-400 mt-1 ml-1">{label}</span>
               </div>
             ))}
             <div className="relative sm:col-span-2">
               <MapPin size={16} className="absolute left-3.5 top-3.5 text-gray-400" />
-              <input
-                type="text"
-                value={settings.location || ""}
-                onChange={(e) => set("location", e.target.value)}
-                placeholder="Cairo, Egypt"
-                className={INPUT + " pl-10"}
-              />
+              <input type="text" value={settings.location || ""} onChange={(e) => set("location", e.target.value)} placeholder="Cairo, Egypt" className={INPUT + " pl-10"} />
               <span className="block text-xs text-gray-400 mt-1 ml-1">Location</span>
             </div>
           </div>
@@ -160,46 +132,41 @@ export default function SettingsPage() {
             ].map(({ key, label, Icon, ph }) => (
               <div key={key} className="relative">
                 <Icon className="absolute left-3.5 top-3.5 text-gray-400" size={16} />
-                <input
-                  type="url"
-                  value={settings.socialLinks?.[key] || ""}
-                  onChange={(e) => setSocial(key, e.target.value)}
-                  placeholder={ph}
-                  className={INPUT + " pl-10"}
-                />
+                <input type="url" value={settings.socialLinks?.[key] || ""} onChange={(e) => setSocial(key, e.target.value)} placeholder={ph} className={INPUT + " pl-10"} />
                 <span className="block text-xs text-gray-400 mt-1 ml-1">{label}</span>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Logos */}
+        {/* Logos — publicId saved alongside URL for proper Cloudinary deletion */}
         <section className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
           <h2 className="text-base font-semibold text-gray-800">Logo Images</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ImageManager
               label="Logo — light background"
-              value={settings.logoUrl ? { url: settings.logoUrl, publicId: "" } : null}
+              value={settings.logoUrl ? { url: settings.logoUrl, publicId: settings.logoPublicId || "" } : null}
               folder="brand"
-              onChange={(img) => set("logoUrl", img?.url || "")}
+              onChange={(img) => {
+                set("logoUrl",       img?.url       || "");
+                set("logoPublicId",  img?.publicId  || "");
+              }}
             />
             <ImageManager
               label="Logo — dark background (white version)"
-              value={settings.logoWhiteUrl ? { url: settings.logoWhiteUrl, publicId: "" } : null}
+              value={settings.logoWhiteUrl ? { url: settings.logoWhiteUrl, publicId: settings.logoWhitePublicId || "" } : null}
               folder="brand"
-              onChange={(img) => set("logoWhiteUrl", img?.url || "")}
+              onChange={(img) => {
+                set("logoWhiteUrl",      img?.url       || "");
+                set("logoWhitePublicId", img?.publicId  || "");
+              }}
             />
           </div>
         </section>
 
       </div>
 
-      <SaveBar
-        isDirty={isDirty}
-        isSaving={isSaving}
-        onSave={handleSave}
-        onDiscard={() => setSettings(savedSettings)}
-      />
+      <SaveBar isDirty={isDirty} isSaving={isSaving} onSave={handleSave} onDiscard={() => setSettings(savedSettings)} />
     </div>
   );
 }
