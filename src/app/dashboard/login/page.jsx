@@ -5,12 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const { login } = useAuth();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const router = useRouter()
+  const [email, setEmail] = useState("admin@valley-seeds.com");
+  const [password, setPassword] = useState("123456789");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -20,13 +21,11 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setSubmitting(true);
-  
+
     const result = await login(email, password);
-  
+
     if (result.success) {
-      if (navigating.current) return;   // guard against double-fire
-      navigating.current = true;
-      window.location.href = "/dashboard";
+      router.replace("/dashboard");
     } else {
       setError(result.message || "Invalid email or password");
       setSubmitting(false);
