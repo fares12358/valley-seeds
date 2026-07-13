@@ -1,15 +1,16 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
   const { login } = useAuth();
-  const router = useRouter()
+
   const [email, setEmail] = useState("admin@valley-seeds.com");
   const [password, setPassword] = useState("123456789");
   const [showPassword, setShowPassword] = useState(false);
@@ -21,11 +22,13 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setSubmitting(true);
-
+  
     const result = await login(email, password);
-
+  
     if (result.success) {
-      router.replace("/dashboard");
+      if (navigating.current) return;   // guard against double-fire
+      navigating.current = true;
+      window.location.href = "/dashboard";
     } else {
       setError(result.message || "Invalid email or password");
       setSubmitting(false);
