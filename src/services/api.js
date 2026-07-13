@@ -14,12 +14,16 @@ api.interceptors.response.use(
       error.response?.status === 401 &&
       typeof window !== "undefined"
     ) {
-      const isAuthPage =
-        window.location.pathname.includes("/dashboard/login") ||
-        window.location.pathname.includes("/dashboard/forgot-password") ||
-        window.location.pathname.includes("/dashboard/reset-password");
+      const pathname = window.location.pathname;
 
-      if (!isAuthPage) {
+      const isDashboardPage = pathname.startsWith("/dashboard");
+      const isAuthPage =
+        pathname.includes("/dashboard/login") ||
+        pathname.includes("/dashboard/forgot-password") ||
+        pathname.includes("/dashboard/reset-password");
+
+      // Only redirect if we're inside the dashboard AND not already on a login page
+      if (isDashboardPage && !isAuthPage) {
         window.location.href = "/dashboard/login";
       }
     }

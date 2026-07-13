@@ -1,6 +1,5 @@
 import "./globals.css";
 import { LangProvider } from "@/context/LangContext";
-import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata = {
   title: "Valley Seeds | Premium Vegetable Seeds",
@@ -12,11 +11,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" dir="ltr">
       <body>
-        <AuthProvider>
           <LangProvider>
             {children}
           </LangProvider>
-        </AuthProvider>
       </body>
     </html>
   );
