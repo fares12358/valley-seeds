@@ -9,18 +9,18 @@ import Sidebar from "@/components/dashboard/Sidebar";
 import TopBar from "@/components/dashboard/TopBar";
 
 const PAGE_TITLES = {
-  "/dashboard":            "Overview",
-  "/dashboard/hero":       "Hero Section",
-  "/dashboard/about":      "About Section",
-  "/dashboard/why-us":     "Why Us Section",
-  "/dashboard/mission":    "Mission & Vision",
-  "/dashboard/services":   "Core Values",
+  "/dashboard": "Overview",
+  "/dashboard/hero": "Hero Section",
+  "/dashboard/about": "About Section",
+  "/dashboard/why-us": "Why Us Section",
+  "/dashboard/mission": "Mission & Vision",
+  "/dashboard/services": "Core Values",
   "/dashboard/technology": "Technology Section",
-  "/dashboard/erp":        "ERP Section",
-  "/dashboard/contact":    "Contact Section",
-  "/dashboard/footer":     "Footer",
-  "/dashboard/messages":   "Messages",
-  "/dashboard/settings":   "Settings",
+  "/dashboard/erp": "ERP Section",
+  "/dashboard/contact": "Contact Section",
+  "/dashboard/footer": "Footer",
+  "/dashboard/messages": "Messages",
+  "/dashboard/settings": "Settings",
 };
 
 // Auth pages render WITHOUT the dashboard shell (no sidebar, no topbar)
@@ -32,7 +32,7 @@ const PUBLIC_PATHS = [
 
 export default function DashboardLayout({ children }) {
   const { user, isLoading } = useAuth();
-  const router   = useRouter();
+  const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
