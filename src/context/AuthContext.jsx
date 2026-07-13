@@ -6,7 +6,7 @@ import api from "@/services/api";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user,      setUser]      = useState(null);
+  const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // On mount — restore session from existing HTTP-only cookie
@@ -21,10 +21,12 @@ export function AuthProvider({ children }) {
       .finally(() => setIsLoading(false));
   }, []);
 
+  // AuthContext.jsx — login()
   const login = useCallback(async (email, password) => {
     try {
       const { data } = await api.post("/auth/login", { email, password });
-      setUser(data.data);
+      // Don't setUser here — we're about to hard-navigate away.
+      // AuthProvider will re-mount on /dashboard and call /auth/me fresh.
       return { success: true };
     } catch (err) {
       const message =

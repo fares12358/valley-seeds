@@ -1,39 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { user, isLoading, login } = useAuth();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
-  // Already logged in → go straight to dashboard
-  useEffect(() => {
-    if (!isLoading && user) {
-      window.location.href = "/dashboard";
-    }
-  }, [user, isLoading]);
+  const navigating = useRef(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSubmitting(true);
-
+  
     const result = await login(email, password);
-
+  
     if (result.success) {
-      // Hard navigation — ensures the browser sends the freshly set
-      // vs_token cookie on the next request so middleware lets us through
+      if (navigating.current) return;   // guard against double-fire
+      navigating.current = true;
       window.location.href = "/dashboard";
     } else {
       setError(result.message || "Invalid email or password");
